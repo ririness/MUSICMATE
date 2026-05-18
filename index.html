@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusicMate</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="top-nav">
+    <div>
+      <button class="nav-btn" id="navHomeBtn">Home</button>
+      <button class="nav-btn" id="navPlayerBtn">Now Playing</button>
+    </div>
+    <div class="nav-right-container">
+      
+      <div class="nav-volume-container">
+        <svg id="volIconSvg" viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <div class="volume-dropdown">
+          <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+        </div>
+      </div>
+
+      <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+          <input type="checkbox" id="checkbox" />
+          <div class="slider">
+            <span class="slider-icon">🌙</span>
+          </div>
+        </label>
+      </div>
+      <button class="maroon-pill-btn" id="addSongBtn"><span>+</span> Add Tracks</button>
+      <input type="file" id="fileInput" accept="audio/*" multiple style="display:none;">
+    </div>
+  </div>
+
+  <div class="main">
+    
+    <div id="homeView" class="app-view active">
+      <div class="home-dashboard">
+        
+        <div class="dashboard-section">
+          <h2>Recently Played Tracks</h2>
+          <div id="dashRecentGrid" class="card-grid"></div>
+        </div>
+
+        <div class="dashboard-section">
+          <h2>Your Playlists</h2>
+          <div id="dashPlaylistsGrid" class="card-grid"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="playerView" class="app-view">
+      
+      <div class="sidebar sidebar-left" id="sidebarLeftPanel">
+        <button class="toggle-handle-left" id="toggleLeftBtn" title="Toggle Playlists">◀</button>
+        
+        <div class="half">
+          <div class="sidebar-section-header">
+            <h3>Playlists</h3>
+            <button class="maroon-pill-btn" id="createPlaylistBtn" style="font-size: 11px; padding: 4px 10px;">Create</button>
+          </div>
+          <div id="playlistsContainer"></div>
+        </div>
+        
+        <div class="half lower-section">
+          <div class="sidebar-section-header">
+            <h3>Favorites</h3>
+          </div>
+          <div id="favoritesContainer"></div>
+        </div>
+      </div>
+
+      <div class="player-section-wrapper">
+        <div class="player-box">
+          <img id="albumArt" class="album-art" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='%23444'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14H11V10h2v6zm0-8H11V6h2v2z'/></svg>" alt="Album Art">
+          
+          <div class="song-meta-container">
+            <div class="song-info">
+              <h3 id="songTitle">No Song Selected</h3>
+              <p id="artistName">Unknown Artist</p>
+            </div>
+
+            <div class="progress-container">
+              <span id="currentTime">0:00</span>
+              <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+              <span id="duration">0:00</span>
+            </div>
+          </div>
+
+          <div class="controls-row">
+            <button id="shuffleBtn" class="shuffle-inline-btn" title="Toggle Shuffle">
+              <svg viewBox="0 0 24 24">
+                <path d="M10.59,9.17L5.41,4L4,5.41l5.17,5.17L10.59,9.17z M14.5,4l2.04,2.04L4,18.59L5.41,20L17.96,7.45L20,9.5V4H14.5z M14.83,13.41 l-1.41,1.41l3.13,3.13L14.5,20H20v-5.5l-2.04,2.04L14.83,13.41z"/>
+              </svg>
+            </button>
+            
+            <button id="prevBtn" class="prev-inline-btn" title="Previous Song">
+              <div class="prev-icon-shape"></div>
+            </button>
+            
+            <button id="playBtn" class="play-inline-btn" title="Play / Pause">
+              <div class="play-icon-shape" id="playIcon"></div>
+              <div class="pause-icon-shape" id="pauseIcon"></div>
+            </button>
+            
+            <button id="nextBtn" class="next-inline-btn" title="Next Song">
+              <div class="next-icon-shape"></div>
+            </button>
+            
+            <button id="playerHeartBtn" class="heart-inline-btn empty" title="Add to Favorites">
+              <svg viewBox="0 0 24 24">
+                <path d="M12,21.35L10.55,20.03C5.4,15.36,2,12.27,2,8.5C2,5.41,4.41,3,7.5,3C9.24,3,10.91,3.81,12,5.08C13.09,3.81,14.76,3,16.5,3C19.59,3,22,5.41,22,8.5C22,12.27,18.6,15.36,13.45,20.03L12,21.35z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="secondary-controls">
+            <button class="maroon-pill-btn" id="lyricsToggleBtn" style="font-size: 11px; padding: 4px 12px;">Lyrics</button>
+          </div>
+        </div>
+
+        <div class="lyrics-container" id="lyricsContainer">
+          <div class="lyrics-header">
+            <button class="maroon-pill-btn" id="editLyricsBtn" style="font-size: 11px; padding: 3px 10px;">✏️ Edit</button>
+          </div>
+          <div class="lyrics-scroll-area" id="lyricsScrollArea">
+            <div class="lyrics-content" id="lyricsContent">No lyrics available for this track.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar sidebar-right" id="sidebarRightPanel">
+        <button class="toggle-handle-right" id="toggleRightBtn" title="Toggle Song List">▶</button>
+        
+        <div class="half">
+          <h3>Songs</h3>
+          
+          <div class="sort-bar">
+            <span class="sort-label">Sort:</span>
+            <button class="sort-pill active" id="sortTitleBtn">Title</button>
+            <button class="sort-pill" id="sortArtistBtn">Artist</button>
+            <button class="sort-pill" id="sortGenreBtn">Genre</button>
+          </div>
+          
+          <div id="playlistSongs"></div>
+        </div>
+        
+        <div class="half recent-section">
+          <h3>Recently Played Tracks</h3>
+          <div id="recentlyPlayed"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="toast-notification" id="toast">
+    <span class="toast-heart">❤️</span>
+    <span id="toastText">Added to Favorites</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
